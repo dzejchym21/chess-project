@@ -9,6 +9,16 @@ def draw_board(scr):
             color = colors[(row + col) % 2]
             pygame.draw.rect(scr, color, Rect(col*SQ_SIZE, row*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
+def draw_pieces(scr, b, images_dict):
+    for row in range(DIMENSION):
+        for col in range(DIMENSION):
+            piece = b.board[row][col]
+            if piece != 0:
+                img_key = piece.image_name
+                img = images_dict[img_key]
+                scr.blit(img, (col*SQ_SIZE, row*SQ_SIZE))
+
+
 def highlight_square(scr, sq_selected):
     if sq_selected != ():
         r, c = sq_selected
@@ -20,10 +30,10 @@ def highlight_square(scr, sq_selected):
 #This function loads all graphics and put them into images dictionary
 def load_images():
     images = {}
-    pieces = ["logo"]
+    pieces = ["logo", "wP", "bP"]
     for piece in pieces:
         full_path = f"assets/{piece}.png"
         img = pygame.image.load(full_path)
-        images[piece] = img
+        images[piece] = pygame.transform.smoothscale(img, (SQ_SIZE, SQ_SIZE))
 
     return images

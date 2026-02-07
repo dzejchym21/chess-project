@@ -1,6 +1,8 @@
 import pygame
 from constaints import *
 from visuals_and_assets_loader import *
+from engine.board import Board
+from engine.Pieces import *
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -11,6 +13,7 @@ pygame.display.flip()
 
 sq_selected = () # it's a selected square
 player_clicks = [] # it's a table containing player move: [(square_from), (square_to)]
+board = Board()
 
 running = True
 while running:
@@ -37,4 +40,5 @@ while running:
 
     draw_board(screen)
     highlight_square(screen, sq_selected)
+    draw_pieces(screen, board, IMAGES)
     pygame.display.update()
