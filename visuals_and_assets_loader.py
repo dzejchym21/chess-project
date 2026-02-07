@@ -9,6 +9,15 @@ def draw_board(scr):
             color = colors[(row + col) % 2]
             pygame.draw.rect(scr, color, Rect(col*SQ_SIZE, row*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
+def highlight_square(scr, sq_selected):
+    if sq_selected != ():
+        r, c = sq_selected
+        s = pygame.Surface((SQ_SIZE, SQ_SIZE))
+        s.set_alpha(100)
+        s.fill(pygame.Color('yellow'))
+        scr.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
+
+#This function loads all graphics and put them into images dictionary
 def load_images():
     images = {}
     pieces = ["logo"]
