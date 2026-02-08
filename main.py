@@ -13,6 +13,7 @@ pygame.display.flip()
 
 sq_selected = () # it's a selected square
 player_clicks = [] # it's a table containing player move: [(square_from), (square_to)]
+valid_moves = []
 board = Board()
 
 running = True
@@ -22,6 +23,7 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             location = pygame.mouse.get_pos()
+            #coordinates (row number, column number)
             col = location[0] // SQ_SIZE
             row = location[1] // SQ_SIZE
 
@@ -31,14 +33,23 @@ while running:
                 player_clicks = []
             else:
                 sq_selected = (row, col)
+                piece = board.get_piece(row, col)
+                if piece != 0:
+                    valid_moves = piece.get_valid_moves(board.get_board())
                 player_clicks.append(sq_selected)
 
-            #if len(player_clicks) == 2:
-            # TODO:
-            #  add player movement logic (getting piece object, valid moves and finally making the move)
+            if len(player_clicks) == 2:
+                sq_from = player_clicks[0]
+                sq_to = player_clicks[1]
+                board.make_move(sq_from, sq_to)
+
+                sq_selected = ()
+                player_clicks = []
 
 
     draw_board(screen)
     highlight_square(screen, sq_selected)
+    if len(valid_moves) > 0:
+        draw_valid_moves(screen, valid_moves)
     draw_pieces(screen, board, IMAGES)
     pygame.display.update()

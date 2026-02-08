@@ -4,8 +4,34 @@ class Piece:
         self.pos = pos
         self.image_name = color + self.__class__.__name__[0]
 
+    def get_valid_moves(self):
+        pass
+
 class Pawn(Piece):
-    pass
+    def get_valid_moves(self, board_array):
+        moves = []
+        r, c = self.pos
+        direction = 1 if self.color == 'b' else -1
+
+        if 0 <= r + direction < 8:
+            if board_array[r + direction][c] == 0:
+                moves.append((r + direction, c))
+
+                start_row = 6 if self.color == 'w' else 1
+                if r == start_row:
+                    if board_array[r + 2 * direction][c] == 0:
+                        moves.append((r + 2 * direction, c))
+
+        for dc in [-1, 1]:
+            new_row = r + direction
+            new_col = c + dc
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                target_piece = board_array[new_row][new_col]
+                if target_piece != 0 and target_piece.color != self.color:
+                    moves.append((new_row, new_col))
+
+        return moves
+
 
 class Rook(Piece):
     pass

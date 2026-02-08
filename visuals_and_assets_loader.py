@@ -40,3 +40,9 @@ def load_images():
         images[piece] = pygame.transform.smoothscale(img, (SQ_SIZE, SQ_SIZE))
 
     return images
+
+def draw_valid_moves(scr, moves):
+    for move in moves:
+        r, c = move
+        center = (c * SQ_SIZE + SQ_SIZE//2, r * SQ_SIZE + SQ_SIZE//2)
+        pygame.draw.circle(scr, (100, 100, 100), center, 12)
