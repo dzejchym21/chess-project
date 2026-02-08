@@ -30,7 +30,10 @@ def highlight_square(scr, sq_selected):
 #This function loads all graphics and put them into images dictionary
 def load_images():
     images = {}
-    pieces = ["logo", "wP", "bP"]
+    pieces = ["logo",
+                "wP", "wB", "wR", "wN", "wK", "wQ",
+                "bP", "bB", "bR", "bN", "bK", "bQ"
+              ]
     for piece in pieces:
         full_path = f"assets/{piece}.png"
         img = pygame.image.load(full_path)
