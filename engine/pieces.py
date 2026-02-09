@@ -41,6 +41,25 @@ class Knight(Piece):
         super().__init__(color, pos)
         self.image_name = color + "N"
 
+    def get_valid_moves(self, board_array):
+        moves = []
+        r, c = self.pos
+        offsets = [
+            (2, 1), (2,-1), (1,2), (1,-2),
+            (-2, 1), (-2,-1), (-1,2), (-1,-2)
+        ]
+
+        for r_end, c_end in offsets:
+            end_row = r + r_end
+            end_col = c + c_end
+            if 0 <= end_row < 8 and 0 <= end_col < 8:
+                target_piece = board_array[end_row][end_col]
+                if target_piece == 0 or target_piece.color != self.color:
+                    moves.append((end_row, end_col))
+
+        return moves
+
+
 class Bishop(Piece):
     pass
 

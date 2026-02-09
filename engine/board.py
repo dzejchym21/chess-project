@@ -1,5 +1,5 @@
 from constaints import *
-from engine.Pieces import *
+from engine.pieces import *
 
 class Board:
     def __init__(self):

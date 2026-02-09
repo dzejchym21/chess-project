@@ -2,7 +2,7 @@ import pygame
 from constaints import *
 from visuals_and_assets_loader import *
 from engine.board import Board
-from engine.Pieces import *
+from engine.pieces import *
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -31,6 +31,7 @@ while running:
             if sq_selected == (row, col):
                 sq_selected = ()
                 player_clicks = []
+                valid_moves = []
             else:
                 sq_selected = (row, col)
                 piece = board.get_piece(row, col)
@@ -45,6 +46,7 @@ while running:
 
                 sq_selected = ()
                 player_clicks = []
+                valid_moves = []
 
 
     draw_board(screen)
