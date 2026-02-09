@@ -7,6 +7,26 @@ class Piece:
     def get_valid_moves(self):
         pass
 
+    def get_sliding_moves(self, directions, board_array):
+        moves = []
+        r, c = self.pos
+        for r_end, c_end in directions:
+            for i in range(1,8):
+                end_row = r + i * r_end
+                end_col = c + i * c_end
+                if 0 <= end_row < 8 and 0 <= end_col < 8:
+                    target_piece = board_array[end_row][end_col]
+                    if target_piece == 0:
+                        moves.append((end_row, end_col))
+                    elif target_piece != 0 and target_piece.color != self.color:
+                        moves.append((end_row, end_col))
+                        break
+                    else:
+                        break
+                else:
+                    break
+        return moves
+
 class Pawn(Piece):
     def get_valid_moves(self, board_array):
         moves = []
@@ -34,7 +54,12 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
-    pass
+    def get_valid_moves(self, board_array):
+        offsets = [
+            (1, 0), (-1, 0), (0, 1), (0, -1)
+        ]
+        return self.get_sliding_moves(offsets, board_array)
+
 
 class Knight(Piece):
     def __init__(self, color, pos):
@@ -61,10 +86,19 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
-    pass
+    def get_valid_moves(self, board_array):
+        offsets = [
+            (1, 1), (1, -1), (-1, 1), (-1, -1)
+        ]
+        return self.get_sliding_moves(offsets, board_array)
 
 class Queen(Piece):
-    pass
+    def get_valid_moves(self, board_array):
+        offsets = [
+            (1, 1), (1, -1), (-1, 1), (-1, -1),
+            (1, 0), (-1, 0), (0, 1), (0, -1)
+        ]
+        return self.get_sliding_moves(offsets, board_array)
 
 class King(Piece):
     pass
