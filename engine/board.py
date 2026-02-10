@@ -6,6 +6,8 @@ class Board:
         self.board = [[0 for _ in range(DIMENSION)] for _ in range(DIMENSION)]
         self.white_to_move = True
         self.setup_board()
+        self.black_king_pos = (0, 4)
+        self.white_king_pos = (7, 4)
         print(self.board)
 
     def setup_board(self):
@@ -32,6 +34,11 @@ class Board:
                 piece.pos = (e_row, e_col)
                 self.board[s_row][s_col] = 0
                 self.white_to_move = not self.white_to_move
+                if isinstance(piece, King):
+                    if piece.color == 'w':
+                        self.white_king_pos = (e_row, e_col)
+                    else:
+                        self.black_king_pos = (e_row, e_col)
 
     def get_piece(self, row, col):
         return self.board[row][col]

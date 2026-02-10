@@ -101,5 +101,24 @@ class Queen(Piece):
         return self.get_sliding_moves(offsets, board_array)
 
 class King(Piece):
-    pass
+    def get_valid_moves(self, board_array):
+        moves = []
+        offsets= [
+            (1, 1), (1, -1), (-1, 1), (-1, -1),
+            (1, 0), (-1, 0), (0, 1), (0, -1)
+        ]
+        r, c = self.pos
+        for r_end, c_end in offsets:
+            new_row = r + r_end
+            new_col = c + c_end
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                piece = board_array[new_row][new_col]
+                if piece == 0:
+                    moves.append((new_row, new_col))
+                elif piece.color != self.color:
+                    moves.append((new_row, new_col))
+                else:
+                    pass
+        return moves
+
 
