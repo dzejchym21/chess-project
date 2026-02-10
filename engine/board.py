@@ -28,8 +28,8 @@ class Board:
 
         piece = self.board[s_row][s_col]
         if piece != 0:
-            valid_moves = piece.get_valid_moves(self.board)
-            if (e_row, e_col) in valid_moves:
+            legal_moves = self.get_legal_moves(piece)
+            if (e_row, e_col) in legal_moves:
                 self.board[e_row][e_col] = piece
                 piece.pos = (e_row, e_col)
                 self.board[s_row][s_col] = 0
@@ -45,3 +45,40 @@ class Board:
 
     def get_board(self):
         return self.board
+
+    def is_under_attack(self, pos, enemy_color):
+        for r in range(DIMENSION):
+            for c in range(DIMENSION):
+                piece = self.board[r][c]
+                if piece != 0 and piece.color == enemy_color:
+                    attacks = piece.get_valid_moves(self.board)
+                    if pos in attacks:
+                        return True
+        return False
+
+    def get_legal_moves(self, piece):
+        legal_moves = []
+        enemy_color = 'w' if piece.color == 'b' else 'b'
+        moves = piece.get_valid_moves(self.board)
+        start_row, start_col = piece.pos
+
+        for move in moves:
+            end_row, end_col = move
+            target_piece = self.board[end_row][end_col]
+
+            #we make a virtual move
+            self.board[end_row][end_col] = piece
+            self.board[start_row][start_col] = 0
+            piece.pos = (end_row, end_col)
+            if isinstance(piece, King):
+                temp_king_pos = (end_row, end_col)
+            else:
+                temp_king_pos = self.white_king_pos if piece.color == 'w' else self.black_king_pos
+
+            if not self.is_under_attack(temp_king_pos, enemy_color):
+                legal_moves.append(move)
+            self.board[end_row][end_col] = target_piece
+            self.board[start_row][start_col] = piece
+            piece.pos = (start_row, start_col)
+
+        return legal_moves

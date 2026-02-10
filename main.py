@@ -36,7 +36,9 @@ while running:
                 sq_selected = (row, col)
                 piece = board.get_piece(row, col)
                 if piece != 0:
-                    valid_moves = piece.get_valid_moves(board.get_board())
+                    valid_moves = board.get_legal_moves(piece)
+                else:
+                    valid_moves = []
                 player_clicks.append(sq_selected)
 
             if len(player_clicks) == 2:
