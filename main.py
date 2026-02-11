@@ -33,23 +33,24 @@ while running:
                 player_clicks = []
                 valid_moves = []
             else:
-                sq_selected = (row, col)
-                piece = board.get_piece(row, col)
-                if piece != 0:
-                    valid_moves = board.get_legal_moves(piece)
-                else:
-                    valid_moves = []
-                player_clicks.append(sq_selected)
-
+                if len(player_clicks) == 0:
+                    piece = board.get_piece(row, col)
+                    if piece != 0 and ((board.white_to_move and piece.color == 'w') or (not board.white_to_move and piece.color == 'b')):
+                        sq_selected = (row, col)
+                        player_clicks.append(sq_selected)
+                        valid_moves = board.get_legal_moves(piece)
+                elif len(player_clicks) == 1:
+                    sq_selected = (row, col)
+                    player_clicks.append(sq_selected)
             if len(player_clicks) == 2:
                 sq_from = player_clicks[0]
                 sq_to = player_clicks[1]
+
                 board.make_move(sq_from, sq_to)
 
                 sq_selected = ()
                 player_clicks = []
                 valid_moves = []
-
 
     draw_board(screen)
     highlight_square(screen, sq_selected)
