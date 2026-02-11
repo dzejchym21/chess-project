@@ -52,6 +52,22 @@ class Pawn(Piece):
 
         return moves
 
+    def get_attack_moves(self, board_array):
+        moves = []
+        row, col = self.pos
+        direction = 1 if self.color == 'b' else -1
+        offsets = [
+            (1, direction), (-1, direction)
+        ]
+        for dc in [-1, 1]:
+            new_row = row + direction
+            new_col = col + dc
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                moves.append((new_row, new_col))
+
+        return moves
+
+
 
 class Rook(Piece):
     def get_valid_moves(self, board_array):

@@ -51,7 +51,10 @@ class Board:
             for c in range(DIMENSION):
                 piece = self.board[r][c]
                 if piece != 0 and piece.color == enemy_color:
-                    attacks = piece.get_valid_moves(self.board)
+                    if isinstance(piece, Pawn):
+                        attacks = piece.get_attack_moves(self.board)
+                    else:
+                        attacks = piece.get_valid_moves(self.board)
                     if pos in attacks:
                         return True
         return False
