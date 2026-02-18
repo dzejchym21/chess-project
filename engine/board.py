@@ -33,12 +33,17 @@ class Board:
                 self.board[e_row][e_col] = piece
                 piece.pos = (e_row, e_col)
                 self.board[s_row][s_col] = 0
-                self.white_to_move = not self.white_to_move
+
                 if isinstance(piece, King):
                     if piece.color == 'w':
                         self.white_king_pos = (e_row, e_col)
                     else:
                         self.black_king_pos = (e_row, e_col)
+
+                self.white_to_move = not self.white_to_move
+                return True
+
+        return False
 
     def get_piece(self, row, col):
         return self.board[row][col]
@@ -85,3 +90,20 @@ class Board:
             piece.pos = (start_row, start_col)
 
         return legal_moves
+
+    def check_end_game(self):
+        current_color = 'w' if self.white_to_move else 'b'
+        enemy_color = 'b' if self.white_to_move else 'w'
+
+        for r in range(DIMENSION):
+            for c in range(DIMENSION):
+                piece = self.board[r][c]
+                if piece != 0 and piece.color == current_color:
+                    if len(self.get_legal_moves(piece)) > 0:
+                        return None
+
+        king_pos = self.white_king_pos if current_color == 'w' else self.black_king_pos
+        if self.is_under_attack(king_pos, enemy_color):
+            return "checkmate"
+        else:
+            return "stalemate"

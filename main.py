@@ -46,7 +46,10 @@ while running:
                 sq_from = player_clicks[0]
                 sq_to = player_clicks[1]
 
-                board.make_move(sq_from, sq_to)
+                if board.make_move(sq_from, sq_to):
+                    game_status = board.check_end_game()
+                    if game_status:
+                        print(f"Game Over: {game_status}")
 
                 sq_selected = ()
                 player_clicks = []
