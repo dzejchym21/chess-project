@@ -30,17 +30,34 @@ class Board:
         if piece != 0:
             legal_moves = self.get_legal_moves(piece)
             if (e_row, e_col) in legal_moves:
+
                 self.board[e_row][e_col] = piece
                 piece.pos = (e_row, e_col)
                 self.board[s_row][s_col] = 0
 
                 if isinstance(piece, King):
+                    if abs(e_col - s_col) == 2:
+                        if e_col == 6:
+                            rook = self.board[s_row][7]
+                            self.board[s_row][5] = rook
+                            self.board[s_row][7] = 0
+                            rook.pos = (s_row, 5)
+                            rook.has_moved = True
+
+                        elif e_col == 2:
+                            rook = self.board[s_row][0]
+                            self.board[s_row][3] = rook
+                            self.board[s_row][0] = 0
+                            rook.pos = (s_row, 3)
+                            rook.has_moved = True
+
                     if piece.color == 'w':
                         self.white_king_pos = (e_row, e_col)
                     else:
                         self.black_king_pos = (e_row, e_col)
 
                 self.white_to_move = not self.white_to_move
+                piece.has_moved = True
                 return True
 
         return False
@@ -57,7 +74,7 @@ class Board:
                 piece = self.board[r][c]
                 if piece != 0 and piece.color == enemy_color:
                     if isinstance(piece, Pawn):
-                        attacks = piece.get_attack_moves(self.board)
+                        attacks = piece.get_attack_moves()
                     else:
                         attacks = piece.get_valid_moves(self.board)
                     if pos in attacks:
@@ -69,6 +86,10 @@ class Board:
         enemy_color = 'w' if piece.color == 'b' else 'b'
         moves = piece.get_valid_moves(self.board)
         start_row, start_col = piece.pos
+
+        if isinstance(piece, King):
+            castle_moves = self.get_castling_moves(piece)
+            legal_moves.extend(castle_moves)
 
         for move in moves:
             end_row, end_col = move
@@ -107,3 +128,28 @@ class Board:
             return "checkmate"
         else:
             return "stalemate"
+
+    def is_clear(self, pos):
+        row, col = pos
+        return self.board[row][col] == 0
+
+    def get_castling_moves(self, piece: 'King') -> list:
+        moves = []
+        if piece.has_moved:
+            return moves
+        enemy_color = 'w' if piece.color == 'b' else 'b'
+        king_pos = piece.pos
+        row = king_pos[0]
+        piece1 = self.board[row][0]
+        piece2 = self.board[row][7]
+        if isinstance(piece1, Rook) and not piece1.has_moved:
+            if all(self.is_clear((row, c)) for c in [1, 2, 3]):
+                if all(not self.is_under_attack((row, col), enemy_color) for col in [2, 3, 4]):
+                    moves.append((row, 2))
+
+        if isinstance(piece2, Rook) and not piece2.has_moved:
+            if all(self.is_clear((row, c)) for c in [5, 6]):
+                if all(not self.is_under_attack((row, col), enemy_color) for col in [4, 5, 6]):
+                    moves.append((row, 6))
+        return moves
+

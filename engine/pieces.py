@@ -3,8 +3,9 @@ class Piece:
         self.color = color
         self.pos = pos
         self.image_name = color + self.__class__.__name__[0]
+        self.has_moved = False
 
-    def get_valid_moves(self):
+    def get_valid_moves(self, board_array):
         pass
 
     def get_sliding_moves(self, directions, board_array):
@@ -52,13 +53,11 @@ class Pawn(Piece):
 
         return moves
 
-    def get_attack_moves(self, board_array):
+    def get_attack_moves(self):
         moves = []
         row, col = self.pos
         direction = 1 if self.color == 'b' else -1
-        offsets = [
-            (1, direction), (-1, direction)
-        ]
+
         for dc in [-1, 1]:
             new_row = row + direction
             new_col = col + dc
@@ -136,5 +135,3 @@ class King(Piece):
                 else:
                     pass
         return moves
-
-
