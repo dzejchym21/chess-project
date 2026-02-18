@@ -29,7 +29,7 @@ class Piece:
         return moves
 
 class Pawn(Piece):
-    def get_valid_moves(self, board_array):
+    def get_valid_moves(self, board_array, ep_target):
         moves = []
         r, c = self.pos
         direction = 1 if self.color == 'b' else -1
@@ -49,6 +49,8 @@ class Pawn(Piece):
             if 0 <= new_row < 8 and 0 <= new_col < 8:
                 target_piece = board_array[new_row][new_col]
                 if target_piece != 0 and target_piece.color != self.color:
+                    moves.append((new_row, new_col))
+                elif (new_row, new_col) == ep_target:
                     moves.append((new_row, new_col))
 
         return moves

@@ -8,6 +8,7 @@ class Board:
         self.setup_board()
         self.black_king_pos = (0, 4)
         self.white_king_pos = (7, 4)
+        self.en_passant_target = ()
         print(self.board)
 
     def setup_board(self):
@@ -56,8 +57,17 @@ class Board:
                     else:
                         self.black_king_pos = (e_row, e_col)
 
+                if isinstance(piece, Pawn) and abs(e_row - s_row) == 2:
+                    self.en_passant_target = ((e_row + s_row) // 2, e_col)
+                elif isinstance(piece, Pawn) and (e_row, e_col) == self.en_passant_target:
+                    self.board[s_row][e_col] = 0
+                    self.en_passant_target = ()
+                else:
+                    self.en_passant_target = ()
+
                 self.white_to_move = not self.white_to_move
                 piece.has_moved = True
+                print(self.en_passant_target)
                 return True
 
         return False
@@ -84,7 +94,10 @@ class Board:
     def get_legal_moves(self, piece):
         legal_moves = []
         enemy_color = 'w' if piece.color == 'b' else 'b'
-        moves = piece.get_valid_moves(self.board)
+        if isinstance(piece, Pawn):
+            moves = piece.get_valid_moves(self.board, self.en_passant_target)
+        else:
+            moves = piece.get_valid_moves(self.board)
         start_row, start_col = piece.pos
 
         if isinstance(piece, King):
