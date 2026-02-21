@@ -1,7 +1,7 @@
 import pygame
 from constaints import *
 from visuals_and_assets_loader import *
-from engine.board import Board
+from engine.board import *
 from engine.pieces import *
 
 pygame.init()
@@ -48,8 +48,10 @@ while running:
                     sq_from = player_clicks[0]
                     sq_to = player_clicks[1]
 
-                    if board.make_move(sq_from, sq_to):
+                    move = Move(sq_from, sq_to, board)
+                    if board.make_move(move):
                         game_status = board.check_end_game()
+                        print(board.move_log)
                         if game_status:
                             print(f"Game Over: {game_status}")
                             game_over = True

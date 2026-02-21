@@ -9,6 +9,7 @@ class Board:
         self.black_king_pos = (0, 4)
         self.white_king_pos = (7, 4)
         self.en_passant_target = ()
+        self.move_log = []
         print(self.board)
 
     def setup_board(self):
@@ -23,54 +24,56 @@ class Board:
             self.board[0][i] = piece("b", (0, i))
             i += 1
 
-    def make_move(self, sq_from, sq_to):
-        s_row, s_col = sq_from
-        e_row, e_col = sq_to
+    def make_move(self, move, is_virtual=False):
+        # Firstly we check if the move is done by a player or by AI
+        # If the move is illegal function returns false
+        if not is_virtual:
+            legal_moves = self.get_legal_moves(move.piece_moved)
+            if (move.e_row, move.e_col) not in legal_moves:
+                return False
 
-        piece = self.board[s_row][s_col]
-        if piece != 0:
-            legal_moves = self.get_legal_moves(piece)
-            if (e_row, e_col) in legal_moves:
+        # We make a move and update the board
+        self.board[move.s_row][move.s_col] = 0
+        self.board[move.e_row][move.e_col] = move.piece_moved
+        move.piece_moved.pos = (move.e_row, move.e_col)
 
-                self.board[e_row][e_col] = piece
-                piece.pos = (e_row, e_col)
-                self.board[s_row][s_col] = 0
+        # En passant, castle
+        if move.is_en_passant:
+            self.board[move.s_row][move.e_col] = 0
 
-                if isinstance(piece, King):
-                    if abs(e_col - s_col) == 2:
-                        if e_col == 6:
-                            rook = self.board[s_row][7]
-                            self.board[s_row][5] = rook
-                            self.board[s_row][7] = 0
-                            rook.pos = (s_row, 5)
-                            rook.has_moved = True
+        elif move.is_castle:
+            if move.e_col == 6:
+                rook = self.board[move.s_row][7]
+                self.board[move.s_row][5] = rook
+                self.board[move.s_row][7] = 0
+                rook.pos = (move.s_row, 5)
+                rook.has_moved = True
 
-                        elif e_col == 2:
-                            rook = self.board[s_row][0]
-                            self.board[s_row][3] = rook
-                            self.board[s_row][0] = 0
-                            rook.pos = (s_row, 3)
-                            rook.has_moved = True
+            elif move.e_col == 2:
+                rook = self.board[move.s_row][0]
+                self.board[move.s_row][3] = rook
+                self.board[move.s_row][0] = 0
+                rook.pos = (move.s_row, 3)
+                rook.has_moved = True
 
-                    if piece.color == 'w':
-                        self.white_king_pos = (e_row, e_col)
-                    else:
-                        self.black_king_pos = (e_row, e_col)
+        if isinstance(move.piece_moved, King):
+            if move.piece_moved.color == 'w':
+                self.white_king_pos = (move.e_row, move.e_col)
+            else:
+                self.black_king_pos = (move.e_row, move.e_col)
 
-                if isinstance(piece, Pawn) and abs(e_row - s_row) == 2:
-                    self.en_passant_target = ((e_row + s_row) // 2, e_col)
-                elif isinstance(piece, Pawn) and (e_row, e_col) == self.en_passant_target:
-                    self.board[s_row][e_col] = 0
-                    self.en_passant_target = ()
-                else:
-                    self.en_passant_target = ()
 
-                self.white_to_move = not self.white_to_move
-                piece.has_moved = True
-                print(self.en_passant_target)
-                return True
+        if isinstance(move.piece_moved, Pawn) and abs(move.e_row - move.s_row) == 2:
+            self.en_passant_target = ((move.e_row + move.s_row) // 2, move.e_col)
+        else:
+            self.en_passant_target = ()
 
-        return False
+        move.piece_moved.pos = (move.e_row, move.e_col)
+        move.piece_moved.has_moved = True
+        self.move_log.append(move)
+        self.white_to_move = not self.white_to_move
+
+        return True
 
     def get_piece(self, row, col):
         return self.board[row][col]
