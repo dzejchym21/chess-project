@@ -166,3 +166,25 @@ class Board:
                     moves.append((row, 6))
         return moves
 
+
+class Move:
+    def __init__(self, start_sq, end_sq, board):
+        self.s_row, self.s_col = start_sq
+        self.e_row, self.e_col = end_sq
+
+        self.piece_moved = board.board[self.s_row][self.s_col]
+        self.piece_captured = board.board[self.e_row][self.e_col]
+
+        # We store flags before move
+        self.old_en_passant = board.en_passant_target
+        self.old_has_moved = self.piece_moved.has_moved
+
+        # We check if move was special (en_passant, castling)
+        self.is_en_passant = (isinstance(self.piece_moved, Pawn) and
+                              (self.e_row, self.e_col) == self.old_en_passant)
+
+        if self.is_en_passant:
+            self.piece_captured = board.board[self.s_row][self.e_col]
+
+        self.is_castle = (isinstance(self.piece_moved, King) and
+                          abs(self.e_col - self.s_col) == 2 )
