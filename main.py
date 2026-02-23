@@ -1,5 +1,6 @@
 import pygame
 from constaints import *
+from constaints import STATUS_BAR_HEIGHT
 from visuals_and_assets_loader import *
 from engine.board import *
 from engine.pieces import *
@@ -27,7 +28,7 @@ while running:
                 location = pygame.mouse.get_pos()
                 #coordinates (row number, column number)
                 col = location[0] // SQ_SIZE
-                row = location[1] // SQ_SIZE
+                row = (location[1] - STATUS_BAR_HEIGHT) // SQ_SIZE
 
                 # if a square is already selected, we deselect it
                 if sq_selected == (row, col):
@@ -72,6 +73,7 @@ while running:
         #        print("Cofnięto ruch!")
 
     draw_board(screen)
+    draw_status_bar(screen, board)
     highlight_square(screen, sq_selected)
     if len(valid_moves) > 0:
         draw_valid_moves(screen, valid_moves)

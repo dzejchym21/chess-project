@@ -7,7 +7,7 @@ def draw_board(scr):
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             color = colors[(row + col) % 2]
-            pygame.draw.rect(scr, color, Rect(col*SQ_SIZE, row*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+            pygame.draw.rect(scr, color, Rect(col*SQ_SIZE, row*SQ_SIZE + STATUS_BAR_HEIGHT, SQ_SIZE, SQ_SIZE))
 
 def draw_pieces(scr, b, images_dict):
     for row in range(DIMENSION):
@@ -16,7 +16,7 @@ def draw_pieces(scr, b, images_dict):
             if piece != 0:
                 img_key = piece.image_name
                 img = images_dict[img_key]
-                scr.blit(img, (col*SQ_SIZE, row*SQ_SIZE))
+                scr.blit(img, (col*SQ_SIZE, row*SQ_SIZE + STATUS_BAR_HEIGHT))
 
 
 def highlight_square(scr, sq_selected):
@@ -25,7 +25,7 @@ def highlight_square(scr, sq_selected):
         s = pygame.Surface((SQ_SIZE, SQ_SIZE))
         s.set_alpha(100)
         s.fill(pygame.Color('yellow'))
-        scr.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
+        scr.blit(s, (c*SQ_SIZE, r*SQ_SIZE + STATUS_BAR_HEIGHT))
 
 #This function loads all graphics and put them into images dictionary
 def load_images():
@@ -44,7 +44,7 @@ def load_images():
 def draw_valid_moves(scr, moves):
     for move in moves:
         r, c = move
-        center = (c * SQ_SIZE + SQ_SIZE//2, r * SQ_SIZE + SQ_SIZE//2)
+        center = (c * SQ_SIZE + SQ_SIZE//2, r * SQ_SIZE + STATUS_BAR_HEIGHT + SQ_SIZE//2)
         pygame.draw.circle(scr, (100, 100, 100), center, 12)
 
 def get_promotion_choice(screen, color, img):
@@ -85,3 +85,29 @@ def get_promotion_choice(screen, color, img):
                         return options[i]
 
 
+def draw_status_bar(screen, board):
+    game_status = board.check_end_game()
+    if game_status == 'checkmate':
+        text = "Checkmate! End game"
+        color = (255, 0, 0)
+        border = (255, 255, 255)
+    elif game_status == 'stalemate':
+        text = "Stalemate! Draw"
+        color = (200, 200, 200)
+        border = (255, 255, 255)
+    else:
+        if board.white_to_move:
+            text = "White to move"
+            color = (255, 255, 255)
+            border = (0, 0, 0)
+        else:
+            text = "Black to move"
+            color = (0, 0, 0)
+            border = (100, 100, 100)
+
+    pygame.draw.rect(screen, color, (0, 0, WIDTH, STATUS_BAR_HEIGHT))
+    pygame.draw.rect(screen, border, (0, 0, WIDTH, STATUS_BAR_HEIGHT), 2)
+    font = pygame.font.SysFont("Arial", 14)
+    text_surface = font.render(text, True, border)
+    text_rect = text_surface.get_rect(center=(WIDTH // 2, STATUS_BAR_HEIGHT // 2))
+    screen.blit(text_surface, text_rect)
