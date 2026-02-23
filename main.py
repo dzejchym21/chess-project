@@ -48,18 +48,19 @@ while running:
                 if len(player_clicks) == 2:
                     sq_from = player_clicks[0]
                     sq_to = player_clicks[1]
-                    move = Move(sq_from, sq_to, board)
-                    if move.is_promotion:
-                        choice = get_promotion_choice(screen, move.piece_moved.color, IMAGES)
-                        board.make_move(move, promoted_to=choice)
-                    else:
-                        board.make_move(move)
+                    if sq_to in valid_moves:
+                        move = Move(sq_from, sq_to, board)
+                        if move.is_promotion:
+                            choice = get_promotion_choice(screen, move.piece_moved.color, IMAGES)
+                            board.make_move(move,is_virtual=True, promoted_to=choice)
+                        else:
+                            board.make_move(move, is_virtual=True)
 
-                    game_status = board.check_end_game()
-                    print(board.move_log)
-                    if game_status:
-                        print(f"Game Over: {game_status}")
-                        game_over = True
+                        game_status = board.check_end_game()
+                        print(board.move_log)
+                        if game_status:
+                            print(f"Game Over: {game_status}")
+                            game_over = True
 
                     sq_selected = ()
                     player_clicks = []
