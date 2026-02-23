@@ -139,49 +139,45 @@ class Board:
         return self.board
 
     def is_under_attack(self, pos, enemy_color):
-        for r in range(DIMENSION):
-            for c in range(DIMENSION):
-                piece = self.board[r][c]
-                if piece != 0 and piece.color == enemy_color:
-                    if isinstance(piece, Pawn):
-                        attacks = piece.get_attack_moves()
-                    else:
-                        attacks = piece.get_valid_moves(self.board)
-                    if pos in attacks:
-                        return True
+        enemy_pieces = self.black_pieces if enemy_color == 'b' else self.white_pieces
+
+        for piece in enemy_pieces:
+            if piece.pos is None:
+                continue
+
+            if isinstance(piece, Pawn):
+                attacks = piece.get_attack_moves()
+            else:
+                attacks = piece.get_valid_moves(self.board)
+
+            if pos in attacks:
+                return True
+
         return False
 
     def get_legal_moves(self, piece):
         legal_moves = []
-        enemy_color = 'w' if piece.color == 'b' else 'b'
         if isinstance(piece, Pawn):
             moves = piece.get_valid_moves(self.board, self.en_passant_target)
         else:
             moves = piece.get_valid_moves(self.board)
-        start_row, start_col = piece.pos
 
         if isinstance(piece, King):
             castle_moves = self.get_castling_moves(piece)
             legal_moves.extend(castle_moves)
 
-        for move in moves:
-            end_row, end_col = move
-            target_piece = self.board[end_row][end_col]
+        start_sq = piece.pos
+        for end_sq in moves:
+            move = Move(start_sq, end_sq, self)
 
-            #we make a virtual move
-            self.board[end_row][end_col] = piece
-            self.board[start_row][start_col] = 0
-            piece.pos = (end_row, end_col)
-            if isinstance(piece, King):
-                temp_king_pos = (end_row, end_col)
-            else:
-                temp_king_pos = self.white_king_pos if piece.color == 'w' else self.black_king_pos
+            self.make_move(move, is_virtual=True)
+            enemy_color = 'b' if piece.color == 'w' else 'w'
+            temp_king_pos = self.white_king_pos if piece.color == 'w' else self.black_king_pos
 
             if not self.is_under_attack(temp_king_pos, enemy_color):
-                legal_moves.append(move)
-            self.board[end_row][end_col] = target_piece
-            self.board[start_row][start_col] = piece
-            piece.pos = (start_row, start_col)
+                legal_moves.append(end_sq)
+
+            self.undo_move()
 
         return legal_moves
 
