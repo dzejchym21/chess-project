@@ -5,6 +5,8 @@ class Board:
     def __init__(self):
         self.board = [[0 for _ in range(DIMENSION)] for _ in range(DIMENSION)]
         self.white_to_move = True
+        self.white_pieces = []
+        self.black_pieces = []
         self.setup_board()
         self.black_king_pos = (0, 4)
         self.white_king_pos = (7, 4)
@@ -17,11 +19,15 @@ class Board:
         pieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
         for col in range(DIMENSION):
             self.board[1][col] = Pawn('b', (1, col))
+            self.black_pieces.append(self.board[1][col])
             self.board[6][col] = Pawn('w', (6, col))
+            self.white_pieces.append(self.board[6][col])
 
         for piece in pieces:
             self.board[7][i] = piece("w", (7, i))
+            self.white_pieces.append(self.board[7][i])
             self.board[0][i] = piece("b", (0, i))
+            self.black_pieces.append(self.board[0][i])
             i += 1
 
     def make_move(self, move, is_virtual=False):
@@ -73,6 +79,12 @@ class Board:
         self.move_log.append(move)
         self.white_to_move = not self.white_to_move
 
+        if move.piece_captured != 0 and move.piece_moved.color == 'w':
+            self.black_pieces.remove(move.piece_captured)
+        elif move.piece_captured != 0 and move.piece_moved.color == 'b':
+            self.white_pieces.remove(move.piece_captured)
+
+
         return True
 
     def undo_move(self):
@@ -114,6 +126,11 @@ class Board:
         self.en_passant_target = move.old_en_passant
         move.piece_moved.has_moved = move.old_has_moved
         self.white_to_move = not self.white_to_move
+
+        if move.piece_captured != 0 and move.piece_moved.color == 'w':
+            self.black_pieces.append(move.piece_captured)
+        elif move.piece_captured != 0 and move.piece_moved.color == 'b':
+            self.white_pieces.append(move.piece_captured)
 
     def get_piece(self, row, col):
         return self.board[row][col]

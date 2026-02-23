@@ -47,7 +47,8 @@ while running:
                 if len(player_clicks) == 2:
                     sq_from = player_clicks[0]
                     sq_to = player_clicks[1]
-
+                    print(board.white_pieces)
+                    print(len(board.black_pieces))
                     move = Move(sq_from, sq_to, board)
                     if board.make_move(move):
                         game_status = board.check_end_game()
