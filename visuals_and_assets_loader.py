@@ -46,3 +46,42 @@ def draw_valid_moves(scr, moves):
         r, c = move
         center = (c * SQ_SIZE + SQ_SIZE//2, r * SQ_SIZE + SQ_SIZE//2)
         pygame.draw.circle(scr, (100, 100, 100), center, 12)
+
+def get_promotion_choice(screen, color, img):
+    options = ['Queen', 'Knight', 'Bishop', 'Rook']
+    choice = None
+
+    menu_width = 410
+    menu_height = 150
+    x_start = (WIDTH - menu_width) // 2
+    y_start = (HEIGHT - menu_height) // 2
+
+    while choice is None:
+        pygame.draw.rect(screen, (50, 50, 50), (x_start, y_start, menu_width, menu_height))
+        pygame.draw.rect(screen, (255, 255, 255), (x_start, y_start, menu_width, menu_height), 2)
+
+        mouse_pos = pygame.mouse.get_pos()
+        for i, opt in enumerate(options):
+            opt_x = x_start + i * 100 + 10
+            opt_y = y_start + 20
+            rect = pygame.Rect(opt_x, opt_y, 90, 120)
+            if rect.collidepoint(mouse_pos):
+                pygame.draw.rect(screen, (100, 100, 100), rect)
+            if opt != 'Knight':
+                screen.blit(img[color + opt[0]], (opt_x, opt_y))
+            else:
+                screen.blit(img[color + 'N'], (opt_x, opt_y))
+
+            font = pygame.font.SysFont("Arial", 18)
+            text_surface = font.render(opt, True, (255, 255, 255))
+            screen.blit(text_surface, (opt_x + 20, opt_y + 90))
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = event.pos
+                for i in range(4):
+                    if x_start + i * 100 < mx < x_start + (i + 1) * 100:
+                        return options[i]
+
+

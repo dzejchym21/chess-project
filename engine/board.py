@@ -30,7 +30,7 @@ class Board:
             self.black_pieces.append(self.board[0][i])
             i += 1
 
-    def make_move(self, move, is_virtual=False):
+    def make_move(self, move, is_virtual=False, promoted_to='Queen'):
         # Firstly we check if the move is done by a player or by AI
         # If the move is illegal function returns false
         if not is_virtual:
@@ -71,7 +71,14 @@ class Board:
                 rook.has_moved = True
 
         elif move.is_promotion:
-            promoted_piece = Queen(move.piece_moved.color, (move.e_row, move.e_col))
+            if promoted_to == 'Queen':
+                promoted_piece = Queen(move.piece_moved.color, (move.e_row, move.e_col))
+            elif promoted_to == 'Knight':
+                promoted_piece = Knight(move.piece_moved.color, (move.e_row, move.e_col))
+            elif promoted_to == 'Bishop':
+                promoted_piece = Bishop(move.piece_moved.color, (move.e_row, move.e_col))
+            elif promoted_to == 'Rook':
+                promoted_piece = Rook(move.piece_moved.color, (move.e_row, move.e_col))
             self.board[move.e_row][move.e_col] = promoted_piece
 
             if move.piece_moved.color == 'w':
@@ -131,6 +138,14 @@ class Board:
                 self.board[move.s_row][3] = 0
                 rook.pos = (move.s_row, 0)
                 rook.has_moved = False
+
+        if move.is_promotion:
+            if move.piece_moved.color == 'w':
+                promoted_queen = self.white_pieces.pop()
+                self.white_pieces.append(move.piece_moved)
+            else:
+                promoted_queen = self.black_pieces.pop()
+                self.black_pieces.append(move.piece_moved)
 
         if isinstance(move.piece_moved, King):
             if move.piece_moved.color == 'w':
