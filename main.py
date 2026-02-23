@@ -60,6 +60,13 @@ while running:
                     player_clicks = []
                     valid_moves = []
 
+        #elif event.type == pygame.KEYDOWN:
+        #    if event.key == pygame.K_u:
+        #        board.undo_move()
+        #        sq_selected = ()
+        #        player_clicks = []
+        #        print("Cofnięto ruch!")
+
     draw_board(screen)
     highlight_square(screen, sq_selected)
     if len(valid_moves) > 0:

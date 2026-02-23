@@ -75,6 +75,46 @@ class Board:
 
         return True
 
+    def undo_move(self):
+        if not self.move_log:
+            return
+
+        move = self.move_log.pop()
+
+        self.board[move.s_row][move.s_col] = move.piece_moved
+        move.piece_moved.pos = (move.s_row, move.s_col)
+        self.board[move.e_row][move.e_col] = 0
+
+        if move.is_en_passant:
+            self.board[move.s_row][move.e_col] = move.piece_captured
+        else:
+            self.board[move.e_row][move.e_col] = move.piece_captured
+
+        if move.is_castle:
+            if move.e_col == 6:
+                rook = self.board[move.s_row][5]
+                self.board[move.s_row][7] = rook
+                self.board[move.s_row][5] = 0
+                rook.pos = (move.s_row, 7)
+                rook.has_moved = False
+
+            elif move.e_col == 2:
+                rook = self.board[move.s_row][3]
+                self.board[move.s_row][0] = rook
+                self.board[move.s_row][3] = 0
+                rook.pos = (move.s_row, 0)
+                rook.has_moved = False
+
+        if isinstance(move.piece_moved, King):
+            if move.piece_moved.color == 'w':
+                self.white_king_pos = (move.s_row, move.s_col)
+            else:
+                self.black_king_pos = (move.s_row, move.s_col)
+
+        self.en_passant_target = move.old_en_passant
+        move.piece_moved.has_moved = move.old_has_moved
+        self.white_to_move = not self.white_to_move
+
     def get_piece(self, row, col):
         return self.board[row][col]
 
