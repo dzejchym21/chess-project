@@ -43,6 +43,14 @@ class Board:
         self.board[move.e_row][move.e_col] = move.piece_moved
         move.piece_moved.pos = (move.e_row, move.e_col)
 
+        if move.piece_captured != 0:
+            if move.piece_moved.color == 'w':
+                if move.piece_captured in self.black_pieces:
+                    self.black_pieces.remove(move.piece_captured)
+            else:
+                if move.piece_captured in self.white_pieces:
+                    self.white_pieces.remove(move.piece_captured)
+
         # En passant, castle
         if move.is_en_passant:
             self.board[move.s_row][move.e_col] = 0
@@ -62,6 +70,19 @@ class Board:
                 rook.pos = (move.s_row, 3)
                 rook.has_moved = True
 
+        elif move.is_promotion:
+            promoted_piece = Queen(move.piece_moved.color, (move.e_row, move.e_col))
+            self.board[move.e_row][move.e_col] = promoted_piece
+
+            if move.piece_moved.color == 'w':
+                if move.piece_moved in self.white_pieces:
+                    self.white_pieces.remove(move.piece_moved)
+                self.white_pieces.append(promoted_piece)
+            else:
+                if move.piece_moved in self.black_pieces:
+                    self.black_pieces.remove(move.piece_moved)
+                self.black_pieces.append(promoted_piece)
+
         if isinstance(move.piece_moved, King):
             if move.piece_moved.color == 'w':
                 self.white_king_pos = (move.e_row, move.e_col)
@@ -78,12 +99,6 @@ class Board:
         move.piece_moved.has_moved = True
         self.move_log.append(move)
         self.white_to_move = not self.white_to_move
-
-        if move.piece_captured != 0 and move.piece_moved.color == 'w':
-            self.black_pieces.remove(move.piece_captured)
-        elif move.piece_captured != 0 and move.piece_moved.color == 'b':
-            self.white_pieces.remove(move.piece_captured)
-
 
         return True
 
@@ -235,7 +250,7 @@ class Move:
         self.old_en_passant = board.en_passant_target
         self.old_has_moved = self.piece_moved.has_moved
 
-        # We check if move was special (en_passant, castling)
+        # We check if move is special (en_passant, castling)
         self.is_en_passant = (isinstance(self.piece_moved, Pawn) and
                               (self.e_row, self.e_col) == self.old_en_passant)
 
@@ -244,3 +259,7 @@ class Move:
 
         self.is_castle = (isinstance(self.piece_moved, King) and
                           abs(self.e_col - self.s_col) == 2 )
+
+        # We check if the move is a pawn promotion
+        self.is_promotion = (isinstance(self.piece_moved, Pawn) and
+                             (self.e_row == 0 or self.e_row == 7))
