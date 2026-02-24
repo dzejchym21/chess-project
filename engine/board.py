@@ -252,6 +252,26 @@ class Board:
                     moves.append((row, 6))
         return moves
 
+    # evaluate function which computes the score of the board
+    def evaluate(self):
+        piece_values = {
+            Pawn: 100,
+            Knight: 320,
+            Bishop: 330,
+            Rook: 500,
+            Queen: 900,
+            King: 20000
+        }
+
+        # the score will be > 0 for white pieces and < 0 for black
+        score = 0
+        for piece in self.white_pieces:
+            score += piece_values[type(piece)]
+        for piece in self.black_pieces:
+            score -= piece_values[type(piece)]
+
+        return score
+
 
 class Move:
     def __init__(self, start_sq, end_sq, board):
