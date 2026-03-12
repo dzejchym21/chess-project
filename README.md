@@ -36,3 +36,11 @@ W projekcie zaimplementowano zaawansowane techniki programistyczne:
 1. Sklonuj repozytorium:
    ```bash
    git clone [https://github.com/dzejchym21/chess-project.git]
+   
+2. Instalacja bibliotek:
+    ```bash
+   pip install pygame
+
+3. Uruchomienie gry
+    ```bash
+   python main.py
